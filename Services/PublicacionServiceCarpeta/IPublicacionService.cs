@@ -1,0 +1,11 @@
+﻿using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
+using API_de_Contenido.DTOs.PublicacionDtoCarpeta;
+using API_de_Contenido.Models;
+
+namespace API_de_Contenido.Services.PublicacionServiceCarpeta
+{
+    public interface IPublicacionService
+    {
+        public Task<Result<PublicacionDto>> CrearPublicacionAsync(PublicacionCrearDto publicacionCrearDto, int usuarioId);
+    }
+}

@@ -1,0 +1,61 @@
+﻿# ===============================
+# .NET / Visual Studio
+# ===============================
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ===============================
+# Visual Studio Code
+# ===============================
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ===============================
+# Rider
+# ===============================
+.idea/
+*.sln.iml
+
+# ===============================
+# Logs
+# ===============================
+Logs/
+*.log
+
+# ===============================
+# Environment & Secrets
+# ===============================
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+*.env
+
+# ===============================
+# OS Files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Packages
+# ===============================
+*.nupkg
+# Uncomment if you don't want packages
+# packages/
+
+# ===============================
+# Test Results
+# ===============================
+TestResults/
+
+# ===============================
+# Publish
+# ===============================
+publish/
