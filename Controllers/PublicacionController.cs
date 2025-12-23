@@ -1,6 +1,7 @@
 ﻿using API_de_Contenido.DTOs.ComentarioDtoCarpeta;
 using API_de_Contenido.DTOs.PublicacionDtoCarpeta;
 using API_de_Contenido.Services.ComentarioServiceCarpeta;
+using API_de_Contenido.Services.LikeServiceCarpeta;
 using API_de_Contenido.Services.PublicacionServiceCarpeta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,11 +16,13 @@ namespace API_de_Contenido.Controllers
     {
         private readonly IPublicacionService _publicacionService;
         private readonly IComentarioService _comentarioService;
+        private readonly ILikeService _likeService;
 
-        public PublicacionController(IPublicacionService publicacionService, IComentarioService comentarioService)
+        public PublicacionController(IPublicacionService publicacionService, IComentarioService comentarioService, ILikeService likeService)
         {
             _publicacionService = publicacionService;
             _comentarioService = comentarioService;
+            _likeService = likeService;
         }
 
         [Authorize]
@@ -114,5 +117,49 @@ namespace API_de_Contenido.Controllers
                 valor = comentarioCreado.Value
             });
         }
+
+        [Authorize]
+        [HttpPost("{publicacionId}/like")]
+        public async Task<IActionResult> ToggleLikeAsync(int publicacionId)
+        {
+            if (publicacionId <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "Su publicacion id no puede ser menor o igual a 0"
+                });
+            }
+
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(usuarioIdClaim, out int usuarioId))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "El usuario id debe de ser un numero"
+                });
+            }
+
+            var toggleLike = await _likeService.ToggleLikeAsync(publicacionId, usuarioId); 
+
+            if (toggleLike.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = toggleLike.Error
+                });
+            }
+
+
+            return Ok(new
+            {
+                success = true,
+                valor = toggleLike.Value
+            });
+        }
+
     }
 }

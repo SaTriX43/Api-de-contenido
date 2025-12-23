@@ -1,11 +1,13 @@
 using API.Middleware;
 using API_de_Contenido.DALs.ComentarioRepositoryCarpeta;
+using API_de_Contenido.DALs.LikeRepositoryCarpeta;
 using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
 using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
 using API_de_Contenido.Models;
 using API_de_Contenido.Repositories;
 using API_de_Contenido.Services;
 using API_de_Contenido.Services.ComentarioServiceCarpeta;
+using API_de_Contenido.Services.LikeServiceCarpeta;
 using API_de_Contenido.Services.PublicacionServiceCarpeta;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +82,9 @@ builder.Services.AddScoped<IPublicacionService, PublicacionService>();
 
 builder.Services.AddScoped<IComentarioService, ComentarioService>();
 builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
+
+builder.Services.AddScoped<ILikeService, LikeService>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
 var app = builder.Build();
 
