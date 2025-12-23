@@ -24,5 +24,11 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
             var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id == publicacionId);
             return publicacionEncontrada;
         }
+        public async Task<List<Publicacion>> ObtenerPublicacionesAsync()
+        {
+            var publicaciones = await _context.Publicaciones
+                .Include(p => p.Comentarios).Include(p => p.Likes).ToListAsync();
+            return publicaciones;
+        }
     }
 }

@@ -4,5 +4,7 @@
     {
         public Task<Publicacion> CrearPublicacionAsync(Publicacion publicacion);
         public Task<Publicacion?> ObtenerPublicacionPorIdAsync(int publicacionId);
+
+        public Task<List<Publicacion>> ObtenerPublicacionesAsync();
     }
 }

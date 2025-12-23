@@ -1,5 +1,6 @@
 ﻿using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
 using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
+using API_de_Contenido.DTOs.ComentarioDtoCarpeta;
 using API_de_Contenido.DTOs.PublicacionDtoCarpeta;
 using API_de_Contenido.Models;
 
@@ -50,6 +51,34 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
             };
 
             return Result<PublicacionDto>.Success(publicacionDto);
+        }
+
+        public async Task<Result<List<PublicacionDto>>> ObtenerPublicacionesAsync()
+        {
+            var publicaciones = await _publicacionRepository.ObtenerPublicacionesAsync();
+
+            var publicacionesDto = publicaciones.Select(p => new PublicacionDto
+            {
+                Id = p.Id,
+                Contenido = p.Contenido,
+                Eliminado = p.Eliminado,
+                FechaCreacion = p.FechaCreacion,
+                FechaEdicion = p.FechaEdicion,
+                Titulo = p.Titulo,
+                UsuarioId = p.UsuarioId,
+                ComentarioDtos = p.Comentarios.Select(c => new ComentarioDto
+                {
+                    Id = c.Id,
+                    Contenido = c.Contenido,
+                    Eliminado = c.Eliminado,
+                    FechaCreacion = c.FechaCreacion,
+                    PublicacionId = c.PublicacionId,    
+                    UsuarioId = c.UsuarioId
+                }).ToList(),
+                Likes = p.Likes.Count
+            }).ToList();
+
+            return Result<List<PublicacionDto>>.Success(publicacionesDto);
         }
     }
 }

@@ -67,6 +67,18 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
+        [HttpGet("obtener-publicaciones")]
+        public async Task<IActionResult> ObtenerPublicacionesAsync()
+        {
+            var publicaciones = await _publicacionService.ObtenerPublicacionesAsync();
+            return Ok(new
+            {
+                success = true,
+                valor = publicaciones.Value
+            });
+        }
+
+        [Authorize]
         [HttpPost("{publicacionId}/crear-comentario")]
         public async Task<IActionResult> CrearComentarioAsync([FromBody] ComentarioCrearDto comentarioCrearDto, int publicacionId)
         {
