@@ -8,6 +8,7 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
     {
         public Task<Result<PublicacionDto>> CrearPublicacionAsync(PublicacionCrearDto publicacionCrearDto, int usuarioId);
         public Task<Result<PublicacionDto>> ActualizarPublicacionAsync(PublicacionCrearDto publicacionActualizarDto, int publicacionId, int usuarioId);
+        public Task<Result> EliminarPublicacionAsync(int publicacionId, int usuarioId);
         public Task<Result<List<PublicacionDto>>> ObtenerPublicacionesAsync();
     }
 }

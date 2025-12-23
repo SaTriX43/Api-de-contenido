@@ -132,7 +132,7 @@ namespace API_de_Contenido.Controllers
 
         [Authorize]
         [HttpPut("{publicacionId}/actualizar")]
-        public async Task<IActionResult> ActualizarPublicacion([FromBody] PublicacionCrearDto publicacionActualizarDto, int publicacionId)
+        public async Task<IActionResult> ActualizarPublicacionAsync([FromBody] PublicacionCrearDto publicacionActualizarDto, int publicacionId)
         {
             if(publicacionId <= 0)
             {
@@ -180,6 +180,46 @@ namespace API_de_Contenido.Controllers
                 success = true,
                 valor = publicacionActualizada.Value
             });
+        }
+
+        [Authorize]
+        [HttpDelete("{publicacionId}/eliminar")]
+        public async Task<IActionResult> EliminarPublicacionAsync(int publicacionId)
+        {
+            if (publicacionId <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "su publicacionId no puede ser menor o igual a 0"
+                });
+            }
+
+
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(usuarioIdClaim, out int usuarioId))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "El usuario id debe de ser un numero"
+                });
+            }
+
+            var publicacionEliminada = await _publicacionService.EliminarPublicacionAsync(publicacionId, usuarioId);
+
+            if (publicacionEliminada.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = publicacionEliminada.Error
+                });
+            }
+
+
+            return NoContent();
         }
 
         [Authorize]

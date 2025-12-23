@@ -5,6 +5,7 @@
         public Task<Publicacion> CrearPublicacionAsync(Publicacion publicacion);
         public Task<Publicacion?> ObtenerPublicacionPorIdAsync(int publicacionId);
         public Task<Publicacion> ActualizarPublicacionAsync(Publicacion publicacion, int publicacionId);
+        public Task EliminarPublicacionAsync(int publicacionId);
         public Task<List<Publicacion>> ObtenerPublicacionesAsync();
     }
 }
