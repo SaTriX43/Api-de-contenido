@@ -27,7 +27,12 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
                 return Result<PublicacionDto>.Failure($"Su usuario con id = {usuarioId} no existe");
             }
 
-            var tituloNormalizado = publicacionCrearDto.Titulo.Trim().ToLower();
+            var tituloNormalizado = publicacionCrearDto.Titulo.Trim();
+
+            if(tituloNormalizado == "")
+            {
+                return Result<PublicacionDto>.Failure("Su titulo no puede estar vacio");
+            }
 
             var publicacionModel = new Publicacion
             {
@@ -79,6 +84,65 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
             }).ToList();
 
             return Result<List<PublicacionDto>>.Success(publicacionesDto);
+        }
+        public async Task<Result<PublicacionDto>> ActualizarPublicacionAsync(PublicacionCrearDto publicacionActualizarDto, int publicacionId, int usuarioId)
+        {
+            var usuarioExiste = await _usuarioRepository.ObtenerPorIdAsync(usuarioId);
+
+            if (usuarioExiste == null)
+            {
+                return Result<PublicacionDto>.Failure($"Su usuario con id = {usuarioId} no existe");
+            }
+
+            if(usuarioExiste.Baneado )
+            {
+                return Result<PublicacionDto>.Failure($"Su usuario con id = {usuarioId} esta baneado");
+            }
+
+            var publicacionExiste = await _publicacionRepository.ObtenerPublicacionPorIdAsync(publicacionId);
+
+            if (publicacionExiste == null)
+            {
+                return Result<PublicacionDto>.Failure($"Su publicacion con id = {publicacionId} no existe");
+            }
+
+            if (publicacionExiste.Eliminado)
+            {
+                return Result<PublicacionDto>.Failure($"Su publicacion con id = {publicacionId} esta eliminada ");
+            }
+
+            if(publicacionExiste.UsuarioId != usuarioId)
+            {
+                return Result<PublicacionDto>.Failure("Solo puede actualizar una publicacion que sea suya");
+            }
+
+            var tituloNormalizado = publicacionActualizarDto.Titulo.Trim();
+
+            if (tituloNormalizado == "")
+            {
+                return Result<PublicacionDto>.Failure("Su titulo no puede estar vacio");
+            }
+
+            var publicacionModel = new Publicacion
+            {
+                Titulo = tituloNormalizado,
+                Contenido = publicacionActualizarDto.Contenido
+            };
+
+            var publicacionActualizar = await _publicacionRepository.ActualizarPublicacionAsync(publicacionModel, publicacionId);
+
+            var publicacionDto = new PublicacionDto
+            {
+                Id = publicacionActualizar.Id,
+                Contenido = publicacionActualizar.Contenido,
+                Eliminado = publicacionActualizar.Eliminado,
+                FechaCreacion = publicacionActualizar.FechaCreacion,
+                FechaEdicion = publicacionActualizar.FechaEdicion,
+                Titulo = publicacionActualizar.Titulo,
+                UsuarioId = publicacionActualizar.UsuarioId
+            };
+
+            return Result<PublicacionDto>.Success(publicacionDto);
         }
     }
 }

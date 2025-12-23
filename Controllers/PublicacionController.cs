@@ -131,6 +131,58 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
+        [HttpPut("{publicacionId}/actualizar")]
+        public async Task<IActionResult> ActualizarPublicacion([FromBody] PublicacionCrearDto publicacionActualizarDto, int publicacionId)
+        {
+            if(publicacionId <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "su publicacionId no puede ser menor o igual a 0"
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = ModelState
+                });
+            }
+
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(usuarioIdClaim, out int usuarioId))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "El usuario id debe de ser un numero"
+                });
+            }
+
+            var publicacionActualizada = await _publicacionService.ActualizarPublicacionAsync(publicacionActualizarDto, publicacionId, usuarioId);
+
+            if (publicacionActualizada.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = publicacionActualizada.Error
+                });
+            }
+
+
+            return Ok(new
+            {
+                success = true,
+                valor = publicacionActualizada.Value
+            });
+        }
+
+        [Authorize]
         [HttpPost("{publicacionId}/like")]
         public async Task<IActionResult> ToggleLikeAsync(int publicacionId)
         {

@@ -7,6 +7,7 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
     public interface IPublicacionService
     {
         public Task<Result<PublicacionDto>> CrearPublicacionAsync(PublicacionCrearDto publicacionCrearDto, int usuarioId);
+        public Task<Result<PublicacionDto>> ActualizarPublicacionAsync(PublicacionCrearDto publicacionActualizarDto, int publicacionId, int usuarioId);
         public Task<Result<List<PublicacionDto>>> ObtenerPublicacionesAsync();
     }
 }

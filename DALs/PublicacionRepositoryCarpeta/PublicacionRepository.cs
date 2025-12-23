@@ -30,5 +30,16 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
                 .Include(p => p.Comentarios).Include(p => p.Likes).ToListAsync();
             return publicaciones;
         }
+
+        public async Task<Publicacion> ActualizarPublicacionAsync(Publicacion publicacion, int publicacionId)
+        {
+            var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id == publicacionId);
+
+            publicacionEncontrada.Titulo = publicacion.Titulo;
+            publicacionEncontrada.Contenido = publicacion.Contenido;
+            publicacionEncontrada.FechaEdicion = DateTime.UtcNow; 
+            
+            return publicacionEncontrada;
+        }
     }
 }
