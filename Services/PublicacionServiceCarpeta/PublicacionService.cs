@@ -58,9 +58,9 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
             return Result<PublicacionDto>.Success(publicacionDto);
         }
 
-        public async Task<Result<List<PublicacionDto>>> ObtenerPublicacionesAsync()
+        public async Task<Result<List<PublicacionDto>>> ObtenerPublicacionesAsync(int? autor, DateTime? fechaInicio, DateTime? fechaFinal)
         {
-            var publicaciones = await _publicacionRepository.ObtenerPublicacionesAsync();
+            var publicaciones = await _publicacionRepository.ObtenerPublicacionesAsync(autor,fechaInicio,fechaFinal);
 
             var publicacionesDto = publicaciones.Select(p => new PublicacionDto
             {

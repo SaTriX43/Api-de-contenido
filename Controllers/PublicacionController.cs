@@ -68,9 +68,9 @@ namespace API_de_Contenido.Controllers
 
         [Authorize]
         [HttpGet("obtener-publicaciones")]
-        public async Task<IActionResult> ObtenerPublicacionesAsync()
+        public async Task<IActionResult> ObtenerPublicacionesAsync([FromQuery] int? autor,[FromQuery] DateTime? fechaInicio,[FromQuery] DateTime? fechaFinal)
         {
-            var publicaciones = await _publicacionService.ObtenerPublicacionesAsync();
+            var publicaciones = await _publicacionService.ObtenerPublicacionesAsync(autor,fechaInicio,fechaFinal);
             return Ok(new
             {
                 success = true,

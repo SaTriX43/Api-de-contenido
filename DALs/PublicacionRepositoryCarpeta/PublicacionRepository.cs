@@ -24,11 +24,31 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
             var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id == publicacionId);
             return publicacionEncontrada;
         }
-        public async Task<List<Publicacion>> ObtenerPublicacionesAsync()
+        public async Task<List<Publicacion>> ObtenerPublicacionesAsync(int? autor, DateTime? fechaInicio, DateTime? fechaFinal)
         {
-            var publicaciones = await _context.Publicaciones
-                .Include(p => p.Comentarios).Include(p => p.Likes).OrderByDescending(p => p.Likes.Count).ToListAsync();
-            return publicaciones;
+            var query = _context.Publicaciones.AsQueryable();
+
+            if(autor.HasValue)
+            {
+                query = query.Where(q => q.UsuarioId == autor);
+            }
+
+            if(fechaInicio.HasValue)
+            {
+                query = query.Where(q => q.FechaCreacion >= fechaInicio);
+            }
+
+            if (fechaFinal.HasValue)
+            {
+                query = query.Where(q => q.FechaCreacion <= fechaFinal);
+            }
+
+
+
+            query = query.Include(p => p.Comentarios).Include(p => p.Likes).OrderByDescending(p => p.Likes.Count);
+
+            
+            return await query.ToListAsync();
         }
         public async Task EliminarPublicacionAsync(int publicacionId)
         {
