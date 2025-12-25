@@ -27,7 +27,7 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
         public async Task<List<Publicacion>> ObtenerPublicacionesAsync()
         {
             var publicaciones = await _context.Publicaciones
-                .Include(p => p.Comentarios).Include(p => p.Likes).ToListAsync();
+                .Include(p => p.Comentarios).Include(p => p.Likes).OrderByDescending(p => p.Likes.Count).ToListAsync();
             return publicaciones;
         }
         public async Task EliminarPublicacionAsync(int publicacionId)
