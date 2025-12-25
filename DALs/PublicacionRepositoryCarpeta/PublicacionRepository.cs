@@ -53,7 +53,7 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
         public async Task EliminarPublicacionAsync(int publicacionId)
         {
             var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id==publicacionId);
-            _context.Publicaciones.Remove(publicacionEncontrada);
+            publicacionEncontrada.Eliminado = true;
             await _context.SaveChangesAsync();
         }
         public async Task<Publicacion> ActualizarPublicacionAsync(Publicacion publicacion, int publicacionId)
