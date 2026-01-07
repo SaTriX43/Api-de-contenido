@@ -13,10 +13,9 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
         }
 
 
-        public async Task<Publicacion> CrearPublicacionAsync(Publicacion publicacion)
+        public Publicacion CrearPublicacion(Publicacion publicacion)
         {
             _context.Publicaciones.Add(publicacion);
-            await _context.SaveChangesAsync();
             return publicacion;
         }
         public async Task<Publicacion?> ObtenerPublicacionPorIdAsync(int publicacionId)
@@ -50,21 +49,6 @@ namespace API_de_Contenido.DALs.PublicacionRepositoryCarpeta
             
             return await query.ToListAsync();
         }
-        public async Task EliminarPublicacionAsync(int publicacionId)
-        {
-            var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id==publicacionId);
-            publicacionEncontrada.Eliminado = true;
-            await _context.SaveChangesAsync();
-        }
-        public async Task<Publicacion> ActualizarPublicacionAsync(Publicacion publicacion, int publicacionId)
-        {
-            var publicacionEncontrada = await _context.Publicaciones.FirstOrDefaultAsync(p => p.Id == publicacionId);
-
-            publicacionEncontrada.Titulo = publicacion.Titulo;
-            publicacionEncontrada.Contenido = publicacion.Contenido;
-            publicacionEncontrada.FechaEdicion = DateTime.UtcNow; 
-            
-            return publicacionEncontrada;
-        }
+        
     }
 }

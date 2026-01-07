@@ -13,22 +13,21 @@ namespace API_de_Contenido.Repositories
             _context = context;
         }
 
-        public async Task<Usuario?> ObtenerPorEmailAsync(string email)
+        public async Task<Usuario?> ObtenerUsuarioPorEmailAsync(string email)
         {
             return await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<Usuario?> ObtenerPorIdAsync(int id)
+        public async Task<Usuario?> ObtenerUsuarioPorIdAsync(int id)
         {
             return await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<Usuario> CrearAsync(Usuario usuario)
+        public Usuario CrearUsuario(Usuario usuario)
         {
             _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
             return usuario;
         }
     }

@@ -1,4 +1,5 @@
-﻿using API_de_Contenido.DALs.LikeRepositoryCarpeta;
+﻿using API_de_Contenido.DALs;
+using API_de_Contenido.DALs.LikeRepositoryCarpeta;
 using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
 using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
 using API_de_Contenido.DTOs.LikeDtoCarpeta;
@@ -8,12 +9,14 @@ namespace API_de_Contenido.Services.LikeServiceCarpeta
 {
     public class LikeService : ILikeService
     {
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
         private readonly ILikeRepository _likeRepository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IPublicacionRepository _publicacionRepository;
 
-        public LikeService(ILikeRepository likeRepository, IUsuarioRepository usuarioRepository, IPublicacionRepository publicacionRepository)
+        public LikeService(ILikeRepository likeRepository, IUsuarioRepository usuarioRepository, IPublicacionRepository publicacionRepository,IUnidadDeTrabajo unidadDeTrabajo)
         {
+            _unidadDeTrabajo = unidadDeTrabajo;
             _likeRepository = likeRepository;
             _usuarioRepository = usuarioRepository;
             _publicacionRepository = publicacionRepository;
@@ -22,7 +25,7 @@ namespace API_de_Contenido.Services.LikeServiceCarpeta
 
         public async Task<Result<LikeRespuestaDto>> ToggleLikeAsync(int publicacionId, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerPorIdAsync(usuarioId);
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorIdAsync(usuarioId);
 
             if(usuarioExiste == null)
             {
@@ -50,7 +53,8 @@ namespace API_de_Contenido.Services.LikeServiceCarpeta
 
             if(likeExiste != null)
             {
-                await _likeRepository.EliminarLikeAsync(likeExiste);
+                _likeRepository.EliminarLike(likeExiste);
+                await _unidadDeTrabajo.GuardarCambiosAsync();
                 return Result<LikeRespuestaDto>.Success(new LikeRespuestaDto
                 {
                     IsLiked = false,
@@ -65,7 +69,9 @@ namespace API_de_Contenido.Services.LikeServiceCarpeta
                 FechaCreacion = DateTime.UtcNow
             };
 
-            await _likeRepository.CrearLikeAsync(likeModel);
+            _likeRepository.CrearLike(likeModel);
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             return Result<LikeRespuestaDto>.Success(new LikeRespuestaDto
             {

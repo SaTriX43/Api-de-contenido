@@ -1,4 +1,5 @@
-﻿using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
+﻿using API_de_Contenido.DALs;
+using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
 using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
 using API_de_Contenido.DTOs.ComentarioDtoCarpeta;
 using API_de_Contenido.DTOs.PublicacionDtoCarpeta;
@@ -8,19 +9,21 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
 {
     public class PublicacionService : IPublicacionService
     {
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
         private readonly IPublicacionRepository _publicacionRepository;
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public PublicacionService(IPublicacionRepository publicacionRepository, IUsuarioRepository usuarioRepository)
+        public PublicacionService(IPublicacionRepository publicacionRepository, IUsuarioRepository usuarioRepository,IUnidadDeTrabajo unidadDeTrabajo)
         {
             _publicacionRepository = publicacionRepository;
             _usuarioRepository = usuarioRepository;
+            _unidadDeTrabajo = unidadDeTrabajo;
         }
 
 
         public async Task<Result<PublicacionDto>> CrearPublicacionAsync(PublicacionCrearDto publicacionCrearDto, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerPorIdAsync(usuarioId);
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorIdAsync(usuarioId);
 
             if(usuarioExiste == null)
             {
@@ -42,7 +45,9 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
                 UsuarioId = usuarioId,
             };
 
-            var publicacionCreada = await _publicacionRepository.CrearPublicacionAsync(publicacionModel);
+            var publicacionCreada = _publicacionRepository.CrearPublicacion(publicacionModel);
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             var publicacionDto = new PublicacionDto
             {
@@ -87,7 +92,12 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
         }
         public async Task<Result> EliminarPublicacionAsync(int publicacionId, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerPorIdAsync(usuarioId);
+            if(publicacionId <= 0)
+            {
+                return Result.Failure("Su publicacionId no puede ser menor o igual a 0");
+            }
+
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorIdAsync(usuarioId);
 
             if (usuarioExiste == null)
             {
@@ -116,13 +126,19 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
                 return Result.Failure("Solo puede actualizar una publicacion que sea suya");
             }
 
-            await _publicacionRepository.EliminarPublicacionAsync(publicacionId);
+            publicacionExiste.Eliminado = true;
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             return Result.Success();
         }
         public async Task<Result<PublicacionDto>> ActualizarPublicacionAsync(PublicacionCrearDto publicacionActualizarDto, int publicacionId, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerPorIdAsync(usuarioId);
+            if (publicacionId <= 0)
+            {
+                return Result<PublicacionDto>.Failure("Su publicacionId no puede ser menor o igual a 0");
+            }
+
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorIdAsync(usuarioId);
 
             if (usuarioExiste == null)
             {
@@ -158,23 +174,22 @@ namespace API_de_Contenido.Services.PublicacionServiceCarpeta
                 return Result<PublicacionDto>.Failure("Su titulo no puede estar vacio");
             }
 
-            var publicacionModel = new Publicacion
-            {
-                Titulo = tituloNormalizado,
-                Contenido = publicacionActualizarDto.Contenido
-            };
 
-            var publicacionActualizar = await _publicacionRepository.ActualizarPublicacionAsync(publicacionModel, publicacionId);
+            publicacionExiste.Titulo = tituloNormalizado;
+            publicacionExiste.Contenido = publicacionActualizarDto.Contenido;
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
+
 
             var publicacionDto = new PublicacionDto
             {
-                Id = publicacionActualizar.Id,
-                Contenido = publicacionActualizar.Contenido,
-                Eliminado = publicacionActualizar.Eliminado,
-                FechaCreacion = publicacionActualizar.FechaCreacion,
-                FechaEdicion = publicacionActualizar.FechaEdicion,
-                Titulo = publicacionActualizar.Titulo,
-                UsuarioId = publicacionActualizar.UsuarioId
+                Id = publicacionExiste.Id,
+                Contenido = publicacionExiste.Contenido,
+                Eliminado = publicacionExiste.Eliminado,
+                FechaCreacion = publicacionExiste.FechaCreacion,
+                FechaEdicion = publicacionExiste.FechaEdicion,
+                Titulo = publicacionExiste.Titulo,
+                UsuarioId = publicacionExiste.UsuarioId
             };
 
             return Result<PublicacionDto>.Success(publicacionDto);

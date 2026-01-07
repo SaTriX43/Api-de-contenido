@@ -26,7 +26,7 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
-        [HttpPost("crear-publicacion")]
+        [HttpPost]
         public async Task<IActionResult> CrearPublicacionAsync([FromBody] PublicacionCrearDto publicacionCrearDto)
         {
             if (!ModelState.IsValid) { 
@@ -67,7 +67,7 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
-        [HttpGet("obtener-publicaciones")]
+        [HttpGet]
         public async Task<IActionResult> ObtenerPublicacionesAsync([FromQuery] int? autor,[FromQuery] DateTime? fechaInicio,[FromQuery] DateTime? fechaFinal)
         {
             var publicaciones = await _publicacionService.ObtenerPublicacionesAsync(autor,fechaInicio,fechaFinal);
@@ -79,7 +79,7 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
-        [HttpPost("{publicacionId}/crear-comentario")]
+        [HttpPost("{publicacionId}/comentario")]
         public async Task<IActionResult> CrearComentarioAsync([FromBody] ComentarioCrearDto comentarioCrearDto, int publicacionId)
         {
             if (!ModelState.IsValid)
@@ -88,15 +88,6 @@ namespace API_de_Contenido.Controllers
                 {
                     success = false,
                     error = ModelState
-                });
-            }
-
-            if(publicacionId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "Su publicacion id no puede ser menor o igual a 0"
                 });
             }
 
@@ -131,18 +122,9 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
-        [HttpPut("{publicacionId}/actualizar")]
+        [HttpPut("{publicacionId}")]
         public async Task<IActionResult> ActualizarPublicacionAsync([FromBody] PublicacionCrearDto publicacionActualizarDto, int publicacionId)
         {
-            if(publicacionId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "su publicacionId no puede ser menor o igual a 0"
-                });
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(new
@@ -183,19 +165,9 @@ namespace API_de_Contenido.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{publicacionId}/eliminar")]
+        [HttpDelete("{publicacionId}")]
         public async Task<IActionResult> EliminarPublicacionAsync(int publicacionId)
         {
-            if (publicacionId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "su publicacionId no puede ser menor o igual a 0"
-                });
-            }
-
-
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(usuarioIdClaim, out int usuarioId))
@@ -226,15 +198,6 @@ namespace API_de_Contenido.Controllers
         [HttpPost("{publicacionId}/like")]
         public async Task<IActionResult> ToggleLikeAsync(int publicacionId)
         {
-            if (publicacionId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "Su publicacion id no puede ser menor o igual a 0"
-                });
-            }
-
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(usuarioIdClaim, out int usuarioId))

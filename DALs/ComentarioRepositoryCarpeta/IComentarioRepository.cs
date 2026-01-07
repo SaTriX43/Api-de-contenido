@@ -2,6 +2,6 @@
 {
     public interface IComentarioRepository
     {
-        public Task<Comentario> CrearComentarioAsync(Comentario comentario);
+        public Comentario CrearComentario(Comentario comentario);
     }
 }

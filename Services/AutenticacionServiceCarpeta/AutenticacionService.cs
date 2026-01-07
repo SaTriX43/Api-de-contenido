@@ -1,4 +1,5 @@
-﻿using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
+﻿using API_de_Contenido.DALs;
+using API_de_Contenido.DALs.UsuarioRepositoryCarpeta;
 using API_de_Contenido.DTOs.AutenticacionDtoCarpeta;
 using API_de_Contenido.Models;
 using API_de_Contenido.Models.Enums;
@@ -12,22 +13,25 @@ namespace API_de_Contenido.Services
 {
     public class AutenticacionService : IAutenticacionService
     {
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IConfiguration _configuration;
 
         public AutenticacionService(
             IUsuarioRepository usuarioRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUnidadDeTrabajo unidadDeTrabajo)
         {
             _usuarioRepository = usuarioRepository;
             _configuration = configuration;
+            _unidadDeTrabajo = unidadDeTrabajo;
         }
 
         public async Task<Result<string>> RegisterAsync(RegisterDto dto)
         {
             var emailNormalizado = dto.Email.Trim().ToLower();
 
-            var existe = await _usuarioRepository.ObtenerPorEmailAsync(emailNormalizado);
+            var existe = await _usuarioRepository.ObtenerUsuarioPorEmailAsync(emailNormalizado);
             if (existe != null)
                 return Result<string>.Failure("El email ya está registrado");
 
@@ -39,9 +43,10 @@ namespace API_de_Contenido.Services
                 Rol = UsuarioRol.User
             };
 
-            await _usuarioRepository.CrearAsync(usuario);
+            var usuarioCreado = _usuarioRepository.CrearUsuario(usuario);
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
-            var token = GenerarJwt(usuario);
+            var token = GenerarJwt(usuarioCreado);
             return Result<string>.Success(token);
         }
 
@@ -49,7 +54,7 @@ namespace API_de_Contenido.Services
         {
             var emailNormalizado = dto.Email.Trim().ToLower();
 
-            var usuario = await _usuarioRepository.ObtenerPorEmailAsync(emailNormalizado);
+            var usuario = await _usuarioRepository.ObtenerUsuarioPorEmailAsync(emailNormalizado);
             if (usuario == null)
                 return Result<string>.Failure("Credenciales inválidas");
 

@@ -2,8 +2,8 @@
 {
     public interface ILikeRepository
     {
-        public Task CrearLikeAsync(Like like);
-        public Task EliminarLikeAsync(Like like);
+        public void CrearLike(Like like);
+        public void EliminarLike(Like like);
         public Task<Like?> ObtenerLikeAsync(int publicacionId, int usuarioId);
         public Task<int> NumeroDeLikesAsync(int publicacionId);
     }

@@ -11,10 +11,9 @@ namespace API_de_Contenido.DALs.ComentarioRepositoryCarpeta
             _context = context;
         }
 
-        public async Task<Comentario> CrearComentarioAsync(Comentario comentario)
+        public Comentario CrearComentario(Comentario comentario)
         {
             _context.Comentarios.Add(comentario);
-            await _context.SaveChangesAsync();
             return comentario;
         }
     }

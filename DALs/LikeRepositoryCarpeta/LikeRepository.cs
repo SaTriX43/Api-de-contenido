@@ -12,16 +12,14 @@ namespace API_de_Contenido.DALs.LikeRepositoryCarpeta
             _context = context;
         }
 
-        public async Task CrearLikeAsync(Like like)
+        public void CrearLike(Like like)
         {
             _context.Likes.Add(like);
-            await _context.SaveChangesAsync();
         }
 
-        public async Task EliminarLikeAsync(Like like)
+        public void EliminarLike(Like like)
         {
             _context.Likes.Remove(like);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<Like?> ObtenerLikeAsync(int publicacionId, int usuarioId)

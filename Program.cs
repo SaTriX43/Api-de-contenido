@@ -1,4 +1,5 @@
 using API.Middleware;
+using API_de_Contenido.DALs;
 using API_de_Contenido.DALs.ComentarioRepositoryCarpeta;
 using API_de_Contenido.DALs.LikeRepositoryCarpeta;
 using API_de_Contenido.DALs.PublicacionRepositoryCarpeta;
@@ -85,6 +86,8 @@ builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
 
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+
+builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
 
 var app = builder.Build();
 
