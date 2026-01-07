@@ -1,267 +1,131 @@
-﻿📘 API de Contenido — Posts, Comentarios y Likes
+﻿# 📝 API de Contenido (Blog / Social)
 
-API REST desarrollada en ASP.NET Core (.NET 8) que implementa un sistema tipo blog / red social simple, con autenticación JWT, reglas de negocio reales y arquitectura por capas.
+API REST desarrollada con **ASP.NET Core** que implementa un sistema de contenido tipo **blog / red social básica**, aplicando buenas prácticas de backend, reglas de negocio y una arquitectura limpia orientada a proyectos reales.
 
-Este proyecto forma parte de mi portafolio como Backend .NET Junior, enfocado en buenas prácticas, lógica de negocio y código mantenible.
+Este proyecto forma parte de un roadmap de aprendizaje enfocado en **Backend .NET Junior**.
 
-🚀 Tecnologías utilizadas
+---
 
-ASP.NET Core Web API (.NET 8)
+## 🚀 Tecnologías utilizadas
 
-Entity Framework Core
+- ASP.NET Core Web API
+- .NET 8
+- Entity Framework Core
+- SQL Server
+- JWT Authentication
+- Unit of Work
+- Result Pattern
+- Swagger / OpenAPI
 
-SQL Server
+---
 
-JWT Authentication
+## 🧱 Arquitectura
 
-BCrypt.Net (hash de contraseñas)
-
-LINQ
-
-Serilog (logging)
-
-Swagger / OpenAPI
-
-Result Pattern
-
-Middleware global de errores
-
-🧱 Arquitectura
-
-Arquitectura en capas, separando responsabilidades:
+El proyecto sigue una arquitectura por capas:
 
 Controllers
-   ↓
-Services (reglas de negocio)
-   ↓
-Repositories (acceso a datos)
-   ↓
-Entity Framework Core
+Services (Lógica de negocio)
+Repositories (Acceso a datos)
+DTOs
+Models (Entidades)
 
 
-Capas principales:
+Se implementa el **patrón Unit of Work** para coordinar repositorios y garantizar consistencia en las operaciones de escritura.
 
-Controllers: manejo de HTTP, validaciones básicas y claims JWT
+---
 
-Services: lógica de negocio, ownership, validaciones de dominio
+## 🔐 Autenticación y autorización
 
-Repositories: acceso a datos (EF Core)
+- Autenticación basada en **JWT**
+- Uso de claims para identificar al usuario autenticado
+- Aplicación de **ownership**:
+  - Solo el autor puede editar o eliminar su contenido
+  - Las acciones se validan usando el `UserId` obtenido desde el token
 
-DTOs: contratos de entrada y salida
+---
 
-Middleware: manejo global de errores
+## 📦 Entidades principales
 
-📦 Entidades del sistema
+- **Usuario**
+- **Publicación (Post)**
+- **Comentario**
+- **Like**
 
-Usuario
+---
 
-Publicación
+## ⚙️ Funcionalidades
 
-Comentario
+### Publicaciones
+- Crear publicación
+- Editar publicación (solo autor)
+- Eliminar publicación (solo autor)
+- Obtener publicaciones con filtros y ordenamiento
 
-Like
+### Comentarios
+- Crear comentarios en publicaciones
+- Validación de comentarios no vacíos
+- Ownership aplicado al eliminar comentarios
 
-Relaciones
+### Likes
+- Dar / quitar like a una publicación (toggle)
+- Un usuario no puede dar like más de una vez a la misma publicación
 
-Usuario 1:N Publicaciones
+---
 
-Publicación 1:N Comentarios
+## 🧠 Reglas de negocio implementadas
 
-Usuario N:N Publicaciones (Likes)
+- Un usuario no puede dar like dos veces a la misma publicación
+- Los comentarios no pueden ser vacíos
+- El contenido solo puede ser modificado por su autor
+- El backend es responsable de validar todas las reglas (no el cliente)
 
-Los likes se controlan mediante una restricción única (UsuarioId + PublicacionId) para evitar duplicados.
+---
 
-🔐 Autenticación y Autorización
+## 📊 Consultas avanzadas
 
-Autenticación basada en JWT
+- Obtener publicaciones con:
+  - Cantidad de likes
+  - Cantidad de comentarios
+- Filtros:
+  - Por autor
+  - Por rango de fechas
+- Ordenamiento:
+  - Más recientes
+  - Más populares (por likes)
 
-Registro y login de usuarios
+---
 
-Hash de contraseñas con BCrypt
+## 📌 Buenas prácticas aplicadas
 
-Claims utilizados:
+- Controllers delgados
+- Lógica de negocio centralizada en Services
+- Repositories sin lógica de dominio
+- Uso de DTOs para evitar exponer entidades
+- Result Pattern para manejo consistente de errores
+- Separación clara de responsabilidades
+- Endpoints pensados desde una perspectiva REST
 
-UserId
+---
 
-Email
+## 🎯 Objetivo del proyecto
 
-Role
+Este proyecto fue desarrollado con fines educativos para:
 
-Autorización aplicada
+- Consolidar conceptos de backend en .NET
+- Practicar diseño de APIs REST reales
+- Aplicar reglas de negocio y ownership
+- Preparar un proyecto demostrable para un rol **Backend Junior**
 
-Solo usuarios autenticados pueden:
+---
 
-crear publicaciones
+## 📂 Estado del proyecto
 
-comentar
+✔️ **Proyecto completado (Nivel 3)**  
+El sistema cumple con todos los requisitos planteados y está listo para ser utilizado como parte de un portafolio profesional.
 
-dar o quitar like
+---
 
-Ownership:
+## 🧑‍💻 Autor
 
-solo el autor puede editar o eliminar su publicación
-
-📌 Endpoints principales
-🔑 Autenticación
-
-POST /api/autenticacion/register
-
-POST /api/autenticacion/login
-
-📝 Publicaciones
-
-POST /api/publicacion/crear-publicacion
-
-GET /api/publicacion/obtener-publicaciones
-
-PUT /api/publicacion/{id}/actualizar
-
-DELETE /api/publicacion/{id}/eliminar
-
-Soporta:
-
-filtro por autor
-
-filtro por fecha
-
-ordenamiento por popularidad (likes)
-
-💬 Comentarios
-
-POST /api/publicacion/{id}/crear-comentario
-
-Reglas:
-
-no se permiten comentarios vacíos
-
-no se permite comentar publicaciones eliminadas
-
-usuarios baneados no pueden comentar
-
-❤️ Likes
-
-POST /api/publicacion/{id}/like
-
-Implementado como toggle:
-
-si el like existe → se elimina
-
-si no existe → se crea
-
-Devuelve:
-
-{
-  "isLiked": true,
-  "likes": 10
-}
-
-🧠 Reglas de negocio implementadas
-
-Un usuario no puede dar like dos veces a la misma publicación
-
-No se permiten comentarios vacíos
-
-Usuarios baneados:
-
-no pueden iniciar sesión
-
-no pueden comentar
-
-no pueden dar like
-
-Publicaciones eliminadas:
-
-no aceptan comentarios
-
-no aceptan likes
-
-Solo el dueño puede editar o eliminar su publicación
-
-Uso de soft delete (Eliminado = true)
-
-⚠️ Manejo de errores
-
-Middleware global de errores
-
-Uso del Result Pattern para evitar excepciones innecesarias
-
-Respuestas consistentes desde los servicios
-
-Controllers solo traducen el resultado a HTTP
-
-🧪 Validaciones
-
-DataAnnotations en DTOs
-
-Validaciones de dominio en Services
-
-Normalización de datos sensibles:
-
-email (Trim + ToLower)
-
-No se normalizan campos de presentación (ej: título)
-
-🗃️ Base de datos
-
-SQL Server
-
-Migrations con Entity Framework Core
-
-Índices únicos:
-
-Email de usuario
-
-Like (UsuarioId + PublicacionId)
-
-▶️ Ejecución del proyecto
-
-Configurar appsettings.json:
-
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=ApiContenidoDb;Trusted_Connection=True;"
-  },
-  "Jwt": {
-    "Key": "clave-super-secreta",
-    "Issuer": "ApiContenido",
-    "Audience": "ApiContenido",
-    "ExpireMinutes": 60
-  }
-}
-
-
-Ejecutar migraciones:
-
-dotnet ef database update
-
-
-Ejecutar el proyecto:
-
-dotnet run
-
-
-Acceder a Swagger:
-
-https://localhost:{puerto}/swagger
-
-🎯 Objetivo del proyecto
-
-Este proyecto fue desarrollado para:
-
-consolidar conocimientos de backend real
-
-practicar reglas de negocio
-
-trabajar con JWT sin Identity
-
-reforzar ownership, relaciones y validaciones
-
-construir un portafolio sólido para roles Junior / Trainee
-
-👤 Autor
-
-Santiago
-Backend Developer (.NET)
-Ecuador 🇪🇨
-
-Proyecto desarrollado como parte de mi formación práctica para roles Backend .NET Junior.
+Desarrollado por **Santiago**  
+Backend .NET Developer en formación
